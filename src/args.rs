@@ -67,7 +67,7 @@ impl FromStr for SineWave {
                                 .map_err(|_| "Parsing float error")?;
                             signal.amplitude = Amplitude(val);
                         }
-                        Some(e) => return Err(format!("Invalid token{}", e)),
+                        Some(e) => return Err(format!("Invalid token {}", e)),
                         None => return Ok(signal),
                     };
                     Ok(signal)
@@ -112,6 +112,19 @@ pub enum SaveMode {
     Raw,
 }
 
+#[derive(Clone, Debug, ValueEnum)]
+pub enum DataForm {
+    Real,
+    IQ,
+}
+
+#[derive(Clone, Debug, ValueEnum)]
+pub enum DataType {
+    Float,
+    Hex16,
+    Hex32
+}
+
 #[derive(Parser)]
 pub struct Args {
     /// Sampling rate for the waveform
@@ -135,8 +148,17 @@ pub struct Args {
     pub sample_points: Option<usize>,
 
     /// Output file
-    #[arg(short = 'o', long = "out")]
-    pub out_file: Option<PathBuf>,
+    #[arg(short = 'o', long = "out", default_value = "out.txt")]
+    pub out_file: PathBuf,
+
+    // NOTE: Not needed yet
+    // /// Data form mode, real or iq (hilbert transform) data.
+    // #[arg(long = "data_form", default_value = "real")]
+    // pub data_form: DataForm,
+
+    /// Data type to output
+    #[arg(short = 'd', long = "data_type", default_value = "float")]
+    pub data_type: DataType,
 
     /// Save mode
     /// Raw for txt file of <real> <imaginary> pair.
